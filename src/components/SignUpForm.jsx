@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import '../app.css'
 
 function SignUpForm({ setToken }){
     const [username, setUsername] = useState("");
@@ -7,34 +8,42 @@ function SignUpForm({ setToken }){
 
     async function handleSubmit(event){
         event.preventDefault();
-        try{
-            let url = "https://fsa-jwt-practice.herokuapp.com/signup";
-            let request = await fetch(url, 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        username: "some-username",
-                        password: "super-secret-999"
-                    })
-                });
-            let result = await request.json();
-            let token = result.token;
 
-            setToken(token);
+        if(username.length >= 8 && password.length >= 8){
+            try{
+                let url = "https://fsa-jwt-practice.herokuapp.com/signup";
+                let request = await fetch(url, 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            username: `${username}`,
+                            password: `${password}`
+                        })
+                    });
+                let result = await request.json();
+                let token = result.token;
+
+                setToken(token);
+            }
+            catch(err){
+                setError(error.message);
+            }
+        } else {
+            if(username.length >= 8) alert("Password must be at least 8 characters long");
+            else if(password.length >= 8) alert("Username must be at least 8 characters long");
+            else alert("Username and Password must be at least 8 characters long");
         }
-        catch(err){
-            setError(error.message);
-        }
+
     }
 
     return (
         <>
         <h2>Sign Up</h2>
         {error && <p>{error}</p>}
-        <form onSubmit={handleSubmit}>
+        <form className="signup-form" onSubmit={handleSubmit}>
         <label>
         Username: <input value={username} onChange={(e) => setUsername(e.target.value)}/>
         </label>
